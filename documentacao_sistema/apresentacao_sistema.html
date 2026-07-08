@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Documentacao Completa - Sistema de Achados e Perdidos</title>
+  <style>
+    :root {
+      --ink: #15243d;
+      --muted: #52627a;
+      --line: #d6ddea;
+      --accent: #1f57c8;
+      --panel: #f6f8fc;
+      --panel-2: #eef3ff;
+      --paper: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.56;
+    }
+
+    .page {
+      width: 210mm;
+      margin: 0 auto;
+      padding: 16mm 15mm 18mm 15mm;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0 0 10px 0;
+      color: var(--ink);
+      letter-spacing: 0;
+    }
+
+    h1 { font-size: 28px; margin-bottom: 6px; }
+    h2 {
+      font-size: 20px;
+      margin-top: 24px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--line);
+    }
+    h3 { font-size: 16px; margin-top: 18px; }
+    h4 { font-size: 14px; margin-top: 14px; }
+
+    p {
+      margin: 0 0 10px 0;
+      color: var(--muted);
+    }
+
+    strong { color: var(--ink); }
+
+    .lead {
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--panel-2);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .card, .section-block, .screen {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 12px 14px;
+      margin: 12px 0;
+      page-break-inside: avoid;
+    }
+
+    .section-block {
+      background: #fff;
+    }
+
+    .screen {
+      background: #fff;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .kpi {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 12px;
+    }
+
+    .kpi .n {
+      display: block;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .label, .file {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    ul {
+      margin: 8px 0 12px 20px;
+      padding: 0;
+      color: var(--muted);
+    }
+
+    li { margin: 0 0 6px 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 6px 0;
+      font-size: 13px;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 7px 8px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: var(--panel-2);
+      color: var(--ink);
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      color: #10315d;
+    }
+
+    .small {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    @media print {
+      .page {
+        width: auto;
+        margin: 0;
+        padding: 11mm 11mm 13mm 11mm;
+      }
+
+      .kpi-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="badge">Documentacao funcional e tecnica</div>
+    <h1>Sistema de Achados e Perdidos</h1>
+    <p class="lead">
+      Documento consolidado para apresentacao interna do sistema de achados e perdidos, cobrindo
+      navegacao real da aplicacao, leitura do codigo-fonte, consulta da base de dados e geracao
+      de evidencias de uso, relatorios e termo de entrega.
+    </p>
+    <p class="meta">
+      Analise realizada em 12/05/2026. Aplicacao desktop JavaFX executada localmente por OpenJDK,
+      com persistencia em MariaDB/MySQL. Este material foi montado para servir como roteiro de
+      apresentacao, especificacao funcional e apoio de treinamento.
+    </p>
+
+    <h2>1. Objetivo do sistema</h2>
+    <p>
+      O sistema existe para controlar o ciclo completo de itens perdidos ou encontrados dentro da
+      operacao do shopping. Ele organiza desde o recebimento do objeto, passando por classificacao,
+      armazenamento, busca, cruzamento com requisicoes de clientes, devolucao ao proprietario,
+      encaminhamento para destino final e emissao de relatorios de controle.
+    </p>
+    <div class="card">
+      <p><strong>Problema que resolve:</strong> substituir controles dispersos por um fluxo unico, rastreavel e auditavel.</p>
+      <p><strong>Perfil de uso:</strong> administradores e operadores da operacao de achados e perdidos.</p>
+      <p><strong>Resultado esperado:</strong> mais agilidade na localizacao de itens, formalizacao da devolucao e melhor governanca sobre o acervo.</p>
+    </div>
+
+    <h2>2. Base real analisada</h2>
+    <p>
+      A documentacao foi produzida sobre a aplicacao em execucao e sobre uma base populada. Isso permite
+      afirmar que as descricoes abaixo nao sao apenas teoricas: elas refletem telas acessadas, modais
+      abertos, relatorios gerados e fluxos validados.
+    </p>
+    <div class="kpi-grid">
+      <div class="kpi"><span class="n">248</span><span class="label">itens cadastrados</span></div>
+      <div class="kpi"><span class="n">46</span><span class="label">entregas registradas</span></div>
+      <div class="kpi"><span class="n">44</span><span class="label">requisicoes de clientes</span></div>
+      <div class="kpi"><span class="n">25</span><span class="label">itens encaminhados</span></div>
+    </div>
+    <div class="section-block">
+      <p><strong>Niveis de acesso encontrados:</strong> Administrador e Operador.</p>
+      <p><strong>Destinos finais cadastrados:</strong> Correio, Descartado, Doacao, Finalizado, Incinerado e Inutilizado.</p>
+      <p><strong>Usuario validado na navegacao:</strong> <code>admin@iguatemi.com.br</code>.</p>
+    </div>
+
+    <h2>3. Visao geral da arquitetura</h2>
+    <p>
+      O projeto segue um modelo desktop em Java com interface JavaFX. A interface chama controladores
+      e classes DAO para executar regras de negocio e persistir dados em banco relacional. O sistema
+      esta organizado em modulos operacionais claros: autenticacao, itens, entregas, requisicoes,
+      encaminhamentos, usuarios e relatorios.
+    </p>
+    <table>
+      <tr>
+        <th>Camada</th>
+        <th>Responsabilidade</th>
+      </tr>
+      <tr>
+        <td>JavaFX / telas</td>
+        <td>Experiencia do operador, validacao visual, formularios, tabelas, modais e acao dos botoes.</td>
+      </tr>
+      <tr>
+        <td>Controllers / services</td>
+        <td>Regras do negocio, consolidacao de dados, cruzamento de informacoes e orquestracao dos fluxos.</td>
+      </tr>
+      <tr>
+        <td>DAOs</td>
+        <td>Consulta, insercao e atualizacao das entidades no banco.</td>
+      </tr>
+      <tr>
+        <td>Banco de dados</td>
+        <td>Usuarios, itens, entregas, requisicoes, operadores, destinos e tabelas auxiliares.</td>
+      </tr>
+      <tr>
+        <td>Camada de relatorios</td>
+        <td>Exportacao em PDF e Excel, resumo executivo e secoes por tipo de relatorio.</td>
+      </tr>
+    </table>
+
+    <h2>4. Fluxo macro da operacao</h2>
+    <ul>
+      <li>O usuario faz login e entra na tela principal.</li>
+      <li>Itens podem ser pesquisados, filtrados, cadastrados, detalhados e acompanhados por situacao.</li>
+      <li>Clientes podem abrir requisicoes com descricao do bem perdido.</li>
+      <li>O sistema auxilia no cruzamento entre item encontrado e requisicao existente.</li>
+      <li>Quando o proprietario e identificado, a entrega e registrada com evidencias e termo.</li>
+      <li>Itens sem devolucao podem ser encaminhados para destino final com rastreabilidade.</li>
+      <li>Ao final, a operacao gera relatorios PDF ou Excel por periodo e por categoria de ocorrencia.</li>
+    </ul>
+
+    <h2>5. Mapa de telas e evidencias</h2>
+
+    <div class="screen">
+      <h3>5.1 Login</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>01-login.jpg</code></p>
+      <p>
+        Ponto de entrada do sistema. A autenticacao e feita por e-mail e senha. O codigo mostra validacao
+        de campos obrigatorios, execucao em segundo plano para nao travar a interface e abertura da tela
+        principal apenas apos sucesso na autenticacao.
+      </p>
+      <p>
+        Funcao operacional: impedir acesso anonimo e garantir rastreabilidade por usuario logado.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.2 Tela principal e listagem de itens</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>02-tela-principal-listagem.jpg</code></p>
+      <p>
+        Esta e a central de uso do sistema. A partir dela, o operador visualiza o estoque de itens e acessa
+        os modulos de entregas, encaminhamentos, requisicoes, relatorios e usuarios. A grade principal exibe
+        colunas operacionais como numero, data, descricao do item, local, categoria, caixa e situacao.
+      </p>
+      <p>
+        Funcoes observadas e confirmadas pelo codigo: busca textual, recarga de lista, abertura de detalhes,
+        menu de contexto, cadastro de novo item e filtro avancado.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.3 Filtros avancados</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>03-filtros-avancados.jpg</code></p>
+      <p>
+        Modal usado para refinar a consulta do estoque. O operador consegue segmentar os registros por
+        situacao, estado, categoria e caixa, o que reduz tempo de busca em uma base maior.
+      </p>
+      <p>
+        Funcao operacional: facilitar triagem, inventario e localizacao rapida durante atendimentos.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.4 Cadastro de item</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>04-cadastro-item.jpg</code></p>
+      <p>
+        Tela usada para entrada de novos objetos. O formulario registra o contexto do recebimento e identifica
+        o item com nivel de detalhe suficiente para busca futura e auditoria.
+      </p>
+      <h4>Funcoes desta tela</h4>
+      <ul>
+        <li>Registrar tipo, nome, marca, numero de lacre e estado do item.</li>
+        <li>Definir local onde foi encontrado, categoria e caixa de armazenamento.</li>
+        <li>Informar entregador, operador responsavel, observacoes e foto.</li>
+        <li>Tratar campos adicionais para tipos especificos, como eletronicos e vestuario.</li>
+        <li>Permitir cadastro auxiliar de local, tipo, caixa e operador sem sair do fluxo principal.</li>
+        <li>Verificar proximidade com requisicoes ja abertas, ajudando na conciliacao.</li>
+      </ul>
+    </div>
+
+    <div class="screen">
+      <h3>5.5 Detalhes do item</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>05-detalhes-item.jpg</code></p>
+      <p>
+        Exibe os dados completos de um registro selecionado. Esta tela reduz risco operacional porque permite
+        validar as informacoes antes de editar, entregar ou encaminhar um item.
+      </p>
+      <p>
+        Funcao operacional: conferenca detalhada e apoio ao atendimento antes da tomada de decisao.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.6 Historico de entregas</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>06-entregas.jpg</code></p>
+      <p>
+        Lista todas as devolucoes registradas. E uma tela de consulta e auditoria, importante para rastrear
+        quando um item saiu do estoque, para quem foi entregue e sob qual tipo de registro.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.7 Nova entrega</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>07-nova-entrega.jpg</code></p>
+      <p>
+        Fluxo de devolucao do item ao proprietario. O formulario registra os dados civis do recebedor, o item,
+        a requisicao associada, a foto da retirada e o termo de entrega.
+      </p>
+      <h4>Funcoes desta tela</h4>
+      <ul>
+        <li>Escolher o tipo de entrega.</li>
+        <li>Informar nome, telefone, CPF e RG do proprietario.</li>
+        <li>Selecionar o item a ser devolvido.</li>
+        <li>Relacionar uma requisicao, quando houver.</li>
+        <li>Anexar foto da entrega como evidencia.</li>
+        <li>Gerar termo antes da gravacao final.</li>
+        <li>Salvar a entrega e retirar o item do fluxo pendente.</li>
+      </ul>
+    </div>
+
+    <div class="screen">
+      <h3>5.8 Historico de encaminhamentos</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>08-encaminhamentos.jpg</code></p>
+      <p>
+        Apresenta os itens que ja seguiram para destino final. A tabela mostra data de envio, data de inventario,
+        item, destino e responsavel, formando trilha administrativa para descarte, doacao, correio ou inutilizacao.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.9 Encaminhar itens</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>09-encaminhar-itens.jpg</code></p>
+      <p>
+        Tela de execucao do encaminhamento. O operador seleciona um ou mais itens elegiveis e informa o destino final.
+        O codigo confirma que existem destinos padronizados cadastrados na base.
+      </p>
+      <p>
+        Funcao operacional: dar baixa formal em itens nao devolvidos, sem perder historico.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.10 Requisicoes de clientes</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>10-requisicoes-clientes.jpg</code></p>
+      <p>
+        Modulo voltado ao cliente que perdeu o objeto. A tela lista as requisicoes e permite ver registros ativos
+        ou ampliar a consulta com a opcao de mostrar todas.
+      </p>
+      <p>
+        Funcao operacional: organizar a demanda dos clientes e aumentar a chance de match com os itens encontrados.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.11 Nova requisicao</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>11-nova-requisicao.jpg</code></p>
+      <p>
+        Formulario para registrar o relato do cliente. O codigo mostra que, alem dos dados do cliente e da descricao
+        do objeto, o fluxo exige associacao e validacao de operador antes da confirmacao.
+      </p>
+      <h4>Funcoes desta tela</h4>
+      <ul>
+        <li>Registrar nome e telefone do cliente.</li>
+        <li>Definir a categoria do item procurado.</li>
+        <li>Associar o operador que conduziu o atendimento.</li>
+        <li>Descrever o objeto ou contexto da perda.</li>
+        <li>Executar validacao do operador por CPF e assinatura.</li>
+        <li>Verificar itens potencialmente semelhantes antes do fechamento.</li>
+      </ul>
+    </div>
+
+    <div class="screen">
+      <h3>5.12 Central de relatorios</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>12-relatorios.jpg</code></p>
+      <p>
+        Tela responsavel pela exportacao gerencial. O operador escolhe periodo, tipo de relatorio e formato de saida.
+        O processo e executado em background, com bloqueio temporario de botoes e atualizacao de status para proteger
+        a experiencia de uso durante geracoes mais pesadas.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.13 Cadastro de usuarios</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>13-cadastro-usuario.jpg</code></p>
+      <p>
+        Tela administrativa para criar novos acessos. O formulario pede nome, e-mail, senha, confirmacao de senha e
+        nivel de acesso, aplicando regras minimas de consistencia antes da gravacao.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.14 Cadastro de operador</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>19-cadastro-operador.jpg</code></p>
+      <p>
+        Subfluxo auxiliar aberto a partir do processo de requisicao. Serve para incluir um operador quando ele ainda nao
+        existe na base, evitando que o atendimento pare por falta de cadastro.
+      </p>
+      <p>
+        Campos confirmados no codigo: nome completo, CPF e data de nascimento.
+      </p>
+    </div>
+
+    <div class="screen">
+      <h3>5.15 Validacao do operador por CPF</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>20-validacao-operador-cpf.jpg</code></p>
+      <p>
+        O sistema exige confirmacao do CPF do operador selecionado e coleta de assinatura antes de concluir certas acoes,
+        especialmente na abertura de requisicoes. Esse desenho fortalece rastreabilidade e reduz a chance de registros
+        feitos sem responsabilidade identificada.
+      </p>
+    </div>
+
+    <h2>6. Relatorios: tipos, formatos e evidencias</h2>
+    <p>
+      O sistema gera relatorios em dois formatos: PDF e Excel. Na interface, os filtros de periodo incluem atalhos
+      como Hoje, Ultimos 7 dias, Ultimos 30 dias e Mes atual. No codigo, o tipo de relatorio selecionado controla
+      tanto o conteudo do PDF quanto as abas produzidas no Excel.
+    </p>
+
+    <table>
+      <tr>
+        <th>Tipo</th>
+        <th>Objetivo</th>
+        <th>Evidencia visual</th>
+        <th>Arquivo gerado</th>
+      </tr>
+      <tr>
+        <td>Relatorio completo</td>
+        <td>Consolidar itens, devolucoes, requisicoes e encaminhamentos no periodo.</td>
+        <td><code>14-relatorio-completo-pdf-1.jpg</code> e paginas seguintes</td>
+        <td><code>relatorios\todos.pdf</code> e <code>relatorios\todos.xlsx</code></td>
+      </tr>
+      <tr>
+        <td>Itens cadastrados</td>
+        <td>Listar entradas de itens com historico e metadados.</td>
+        <td><code>15-relatorio-itens-cadastrados-pdf-1.jpg</code> e paginas seguintes</td>
+        <td><code>relatorios\itens_cadastrados.pdf</code> e <code>relatorios\itens_cadastrados.xlsx</code></td>
+      </tr>
+      <tr>
+        <td>Itens devolvidos</td>
+        <td>Mostrar entregas concluida com dados do proprietario e do item.</td>
+        <td><code>16-relatorio-itens-devolvidos-pdf-1.jpg</code> e paginas seguintes</td>
+        <td><code>relatorios\itens_devolvidos.pdf</code> e <code>relatorios\itens_devolvidos.xlsx</code></td>
+      </tr>
+      <tr>
+        <td>Itens requisitados</td>
+        <td>Consolidar os pedidos de clientes e o historico de busca.</td>
+        <td><code>17-relatorio-requisicoes-pdf-1.jpg</code> e paginas seguintes</td>
+        <td><code>relatorios\itens_requisitados.pdf</code> e <code>relatorios\itens_requisitados.xlsx</code></td>
+      </tr>
+      <tr>
+        <td>Itens encaminhados</td>
+        <td>Registrar a baixa definitiva e o destino final dado ao item.</td>
+        <td><code>18-relatorio-encaminhamentos-pdf-1.jpg</code> e paginas seguintes</td>
+        <td><code>relatorios\itens_encaminhados.pdf</code> e <code>relatorios\itens_encaminhados.xlsx</code></td>
+      </tr>
+    </table>
+
+    <div class="section-block">
+      <h3>6.1 Relatorio completo</h3>
+      <p>
+        O PDF completo e o documento gerencial mais abrangente. Pelo codigo da camada de relatorios, ele monta
+        cabecalho, resumo executivo, ocorrencia geral e secoes especificas para devolucoes, itens cadastrados,
+        requisicoes e encaminhamentos.
+      </p>
+      <p>
+        A primeira pagina validada em <code>14-relatorio-completo-pdf-1.jpg</code> mostra os indicadores consolidados
+        da base analisada: 248 itens, 46 devolucoes, 44 requisicoes, 25 encaminhamentos e saldo de pendencias.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>6.2 Relatorio de itens cadastrados</h3>
+      <p>
+        Documenta tudo o que entrou no estoque no periodo consultado. E util para inventario, conferencia fisica
+        e acompanhamento de volume operacional. O PDF exibido em <code>15-relatorio-itens-cadastrados-pdf-1.jpg</code>
+        comprova que o sistema apresenta historico detalhado dos itens.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>6.3 Relatorio de itens devolvidos</h3>
+      <p>
+        Focado na etapa de entrega. O conteudo confirma quem recebeu o item, quando a devolucao ocorreu e qual foi
+        o bem entregue. A evidencia visual pode ser vista em <code>16-relatorio-itens-devolvidos-pdf-1.jpg</code>.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>6.4 Relatorio de requisicoes</h3>
+      <p>
+        Consolida as solicitacoes de clientes, permitindo entender a procura por categoria, o volume de atendimentos
+        e possiveis oportunidades de conciliacao. Evidencia principal: <code>17-relatorio-requisicoes-pdf-1.jpg</code>.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>6.5 Relatorio de encaminhamentos</h3>
+      <p>
+        Mostra quais itens sairam do acervo por destino final, com rastreio do motivo e do responsavel. Evidencia
+        principal: <code>18-relatorio-encaminhamentos-pdf-1.jpg</code>.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>6.6 Como o Excel e estruturado</h3>
+      <p>
+        O exportador Excel sempre cria uma aba de resumo e adiciona outras abas conforme o tipo selecionado. Esse
+        desenho e valioso para operacao e gestao, porque permite tanto visao executiva quanto tratamento analitico
+        posterior fora da aplicacao.
+      </p>
+    </div>
+
+    <h2>7. Termo de entrega</h2>
+    <p>
+      A camada de relatorio tambem gera um termo formal de devolucao em PDF. Esse documento funciona como comprovante
+      de retirada do item e eleva o nivel de formalizacao juridica e operacional do processo.
+    </p>
+    <div class="screen">
+      <h3>7.1 Exemplo de termo gerado</h3>
+      <p class="file"><strong>Screenshot:</strong> <code>21-termo-entrega-exemplo-pdf-1.jpg</code></p>
+      <p class="file"><strong>Arquivo PDF:</strong> <code>relatorios\termo_entrega_exemplo.pdf</code></p>
+      <p>
+        O termo validado apresenta numero do documento, data, identificacao do proprietario, referencia ao item,
+        declaracao de recebimento e areas de assinatura. O codigo confirma ainda suporte a foto do cadastro e foto
+        da entrega, quando disponiveis.
+      </p>
+    </div>
+
+    <h2>8. Fluxos funcionais detalhados</h2>
+
+    <div class="section-block">
+      <h3>8.1 Fluxo de cadastro de item</h3>
+      <ul>
+        <li>Acessar a tela principal.</li>
+        <li>Clicar em cadastro de item.</li>
+        <li>Preencher classificacao, localizacao, estado, operador e observacoes.</li>
+        <li>Anexar foto, quando houver.</li>
+        <li>Salvar o item para que ele passe a integrar o estoque consultavel.</li>
+      </ul>
+      <p class="small">Tela de referencia: <code>04-cadastro-item.jpg</code>.</p>
+    </div>
+
+    <div class="section-block">
+      <h3>8.2 Fluxo de nova requisicao com operador</h3>
+      <ul>
+        <li>Acessar requisicoes de clientes.</li>
+        <li>Abrir nova requisicao.</li>
+        <li>Preencher os dados do cliente e a descricao do item perdido.</li>
+        <li>Selecionar o operador responsavel.</li>
+        <li>Se o operador nao existir, usar o fluxo de cadastro de operador.</li>
+        <li>Confirmar o operador por CPF e assinatura.</li>
+        <li>Salvar a requisicao e registrar o atendimento.</li>
+      </ul>
+      <p class="small">
+        Telas de referencia: <code>11-nova-requisicao.jpg</code>, <code>19-cadastro-operador.jpg</code> e
+        <code>20-validacao-operador-cpf.jpg</code>.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>8.3 Fluxo de entrega de item</h3>
+      <ul>
+        <li>Acessar o modulo de entregas.</li>
+        <li>Abrir nova entrega.</li>
+        <li>Selecionar o item e informar os dados do proprietario.</li>
+        <li>Relacionar a requisicao, quando houver vinculo.</li>
+        <li>Gerar o termo de entrega.</li>
+        <li>Registrar foto da retirada, se aplicavel.</li>
+        <li>Salvar a entrega para concluir a devolucao.</li>
+      </ul>
+      <p class="small">
+        Telas de referencia: <code>06-entregas.jpg</code>, <code>07-nova-entrega.jpg</code> e
+        <code>21-termo-entrega-exemplo-pdf-1.jpg</code>.
+      </p>
+    </div>
+
+    <div class="section-block">
+      <h3>8.4 Fluxo de encaminhamento</h3>
+      <ul>
+        <li>Acessar o historico ou a tela de novo encaminhamento.</li>
+        <li>Selecionar os itens elegiveis.</li>
+        <li>Definir o destino final.</li>
+        <li>Salvar a baixa para retirar os itens do estoque ativo.</li>
+        <li>Usar os relatorios para auditoria posterior.</li>
+      </ul>
+      <p class="small">Telas de referencia: <code>08-encaminhamentos.jpg</code> e <code>09-encaminhar-itens.jpg</code>.</p>
+    </div>
+
+    <div class="section-block">
+      <h3>8.5 Fluxo de administracao de usuarios</h3>
+      <ul>
+        <li>Acessar o cadastro de usuarios.</li>
+        <li>Preencher nome, e-mail e senha.</li>
+        <li>Confirmar a senha.</li>
+        <li>Definir se o perfil sera Administrador ou Operador.</li>
+        <li>Salvar para liberar o acesso.</li>
+      </ul>
+      <p class="small">Tela de referencia: <code>13-cadastro-usuario.jpg</code>.</p>
+    </div>
+
+    <h2>9. Funcoes importantes por modulo</h2>
+    <table>
+      <tr>
+        <th>Modulo</th>
+        <th>Funcoes principais</th>
+      </tr>
+      <tr>
+        <td>Autenticacao</td>
+        <td>Login por e-mail e senha, validacao segura e abertura controlada da sessao.</td>
+      </tr>
+      <tr>
+        <td>Itens</td>
+        <td>Cadastrar, listar, filtrar, detalhar, classificar, anexar foto e localizar rapidamente no estoque.</td>
+      </tr>
+      <tr>
+        <td>Requisicoes</td>
+        <td>Registrar perda relatada por cliente, associar operador, validar CPF do operador e comparar com itens existentes.</td>
+      </tr>
+      <tr>
+        <td>Entregas</td>
+        <td>Registrar devolucao, gerar termo, associar evidencias e manter historico auditavel.</td>
+      </tr>
+      <tr>
+        <td>Encaminhamentos</td>
+        <td>Controlar destino final de itens nao devolvidos.</td>
+      </tr>
+      <tr>
+        <td>Usuarios</td>
+        <td>Criar acessos, diferenciar perfis e suportar governanca operacional.</td>
+      </tr>
+      <tr>
+        <td>Relatorios</td>
+        <td>Exportar PDF/Excel por tipo e periodo, com resumo executivo e secoes analiticas.</td>
+      </tr>
+    </table>
+
+    <h2>10. Seguranca identificada no codigo</h2>
+    <p>
+      O sistema apresenta boas praticas relevantes para uma aplicacao operacional interna. A autenticacao nao guarda
+      senha em texto puro; o codigo usa algoritmo PBKDF2 com HmacSHA256, salt individual, 100000 iteracoes e comparacao
+      segura de hash. Alem disso, o acesso ao banco e feito com <code>PreparedStatement</code> em varios pontos, o que
+      ajuda na protecao contra injecao de SQL.
+    </p>
+    <ul>
+      <li>Hash de senha com derivacao forte e salt.</li>
+      <li>Comparacao segura de credenciais.</li>
+      <li>Perfis distintos de acesso: Administrador e Operador.</li>
+      <li>Validacao extra do operador por CPF e assinatura em fluxos sensiveis.</li>
+      <li>Persistencia com instrucoes parametrizadas, reduzindo risco de injecao.</li>
+      <li>Rastreabilidade de quem executou partes do processo.</li>
+    </ul>
+
+    <h2>11. Desempenho e experiencia de uso</h2>
+    <p>
+      A leitura do codigo mostra preocupacao real com fluidez da interface. Operacoes de login, carregamento de lista,
+      atualizacao de status e geracao de relatorios foram colocadas em threads de background, com retorno ao JavaFX
+      apenas para atualizar a tela. Isso evita congelamento da janela em atividades mais pesadas.
+    </p>
+    <ul>
+      <li>Login executado em task/thread separada.</li>
+      <li>Listagem e rotinas de atualizacao disparadas sem bloquear a interface.</li>
+      <li>Geracao de relatorios com status visual e botoes temporariamente desabilitados.</li>
+      <li>Uso de mapas e cache local na consolidacao de certos dados do relatorio, reduzindo consultas repetidas.</li>
+      <li>Atalhos de periodo e filtros que encurtam o caminho operacional do usuario.</li>
+    </ul>
+    <p>
+      Em termos de desenho de produto, o sistema tambem acerta ao separar bem os modulos, manter os fluxos especializados
+      e registrar evidencias como termo, foto e dados do operador. Isso melhora tanto a operacao quanto o controle.
+    </p>
+
+    <h2>12. Pontos fortes do sistema</h2>
+    <ul>
+      <li>Cobre o ciclo completo do item, da entrada ao destino final.</li>
+      <li>Tem boa rastreabilidade documental, inclusive com termo de entrega.</li>
+      <li>Oferece relatorios gerenciais em PDF e Excel.</li>
+      <li>Trata seguranca de login com padrao superior ao minimo esperado.</li>
+      <li>Impede perda de contexto com validacao de operador em fluxos importantes.</li>
+      <li>Tem base flexivel para administracao de categorias, locais, caixas e operadores.</li>
+      <li>Foi construindo pensando em operacao real, nao apenas em cadastro simples.</li>
+    </ul>
+
+    <h2>13. Observacoes operacionais</h2>
+    <p>
+      Nos relatorios, o codigo suporta exibicao de fotos relacionadas aos itens e entregas. Na base analisada, parte
+      dos registros nao possui todos os arquivos de imagem acessiveis no ambiente atual, entao alguns trechos podem
+      aparecer sem foto. Isso nao invalida a funcao; apenas indica dependencia da disponibilidade do arquivo fisico.
+    </p>
+    <p>
+      Para uso em apresentacao, os screenshots dos PDFs foram separados em JPG dentro da pasta de evidencias, o que
+      facilita montar slides pagina por pagina.
+    </p>
+
+    <h2>14. Inventario de arquivos entregues</h2>
+    <table>
+      <tr>
+        <th>Tipo</th>
+        <th>Local</th>
+      </tr>
+      <tr>
+        <td>Documento textual principal</td>
+        <td><code>apresentacao_sistema.html</code></td>
+      </tr>
+      <tr>
+        <td>Versao PDF para distribuicao</td>
+        <td><code>apresentacao_sistema.pdf</code></td>
+      </tr>
+      <tr>
+        <td>Screenshots das telas</td>
+        <td><code>prints\01-login.jpg</code> ate <code>prints\21-termo-entrega-exemplo-pdf-1.jpg</code></td>
+      </tr>
+      <tr>
+        <td>Relatorios gerados</td>
+        <td><code>relatorios\*.pdf</code> e <code>relatorios\*.xlsx</code></td>
+      </tr>
+    </table>
+
+    <h2>15. Conclusao executiva</h2>
+    <p>
+      O sistema analisado e uma solucao operacional completa para achados e perdidos. Ele nao se limita ao cadastro
+      de itens: estrutura atendimento, validacao de operadores, controle de devolucao, termo formal, destino final e
+      inteligencia gerencial por relatorios. Pela implementacao observada, ha boas decisoes de seguranca, fluidez de
+      interface e rastreabilidade. Para fins de apresentacao interna, o material reunido aqui permite explicar tanto
+      o fluxo geral quanto cada funcao critica do produto.
+    </p>
+  </div>
+</body>
+</html>
