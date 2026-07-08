@@ -506,14 +506,14 @@ export async function gerarRelatorioPeriodo(req: Request, res: Response) {
         const fim = new Date(anoFim, mesFim - 1, diaFim, 23, 59, 59, 999);
         const tipoNormalizado = normalizarTipoRelatorio(tipo);
 
-        if (formato === "pdf") {
-            return await gerarPDFDesktop(inicio, fim, tipoNormalizado, res);
-        }
-
         const dadosRelatorio = aplicarFiltroTipoRelatorio(
             await buscarDadosRelatorio(inicio, fim, tipoNormalizado),
             tipoNormalizado
         );
+
+        if (formato === "pdf") {
+            return await gerarPdfPorConfiguracao(dadosRelatorio, inicio, fim, tipoNormalizado, res);
+        }
 
         if (formato === "excel") {
             return await gerarExcel(dadosRelatorio, res);
@@ -526,7 +526,8 @@ export async function gerarRelatorioPeriodo(req: Request, res: Response) {
 
 function encontrarJavaExecutavel(): string | null {
     const candidatos = [
-        process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, "bin", "java.exe") : null,
+        process.env.JAVA_HOME ? path.join(process.env.JAVA_HOME, "bin", process.platform === "win32" ? "java.exe" : "java") : null,
+        process.platform === "win32" ? "java.exe" : "java",
         "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.9.10-hotspot\\bin\\java.exe",
         "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.17.10-hotspot\\bin\\java.exe",
         "C:\\Program Files\\Eclipse Adoptium\\jre-17.0.17.10-hotspot\\bin\\java.exe"
@@ -593,7 +594,7 @@ async function gerarPDFDesktop(
             [
                 "-Duser.timezone=America/Sao_Paulo",
                 "-cp",
-                `${pastaClasses};${pastaResources};${libs};${mysqlConnector}`,
+                `${pastaClasses}${path.delimiter}${pastaResources}${path.delimiter}${libs}${path.delimiter}${mysqlConnector}`,
                 "DesktopReportCompare",
                 formatarDataISO(dataInicio),
                 formatarDataISO(dataFim),
@@ -614,6 +615,44 @@ async function gerarPDFDesktop(
             await fs.promises.unlink(arquivoTemporario).catch(() => undefined);
         }
     }
+}
+
+function podeUsarPdfDesktop(): boolean {
+    const raizWorkspace = path.resolve(__dirname, "../../../..");
+    const pastaDesktop = process.env.DESKTOP_PROJECT_ROOT || path.join(raizWorkspace, "Achados-e-Perdidos-Iguatemi");
+    const pastaClasses = process.env.DESKTOP_JAVA_CLASSES_DIR || path.join(raizWorkspace, "tools", "java-out");
+    const mysqlConnector = process.env.DESKTOP_MYSQL_CONNECTOR || path.join(raizWorkspace, "mysql-connector-j-8.4.0.jar");
+
+    return Boolean(
+        encontrarJavaExecutavel() &&
+        fs.existsSync(pastaDesktop) &&
+        fs.existsSync(pastaClasses) &&
+        fs.existsSync(mysqlConnector)
+    );
+}
+
+async function gerarPdfPorConfiguracao(
+    dadosRelatorio: RelatorioPeriodo,
+    dataInicio: Date,
+    dataFim: Date,
+    tipo: TipoRelatorio,
+    res: Response
+) {
+    const modoPdf = (process.env.PDF_ENGINE || "auto").toLowerCase();
+
+    if (modoPdf === "desktop") {
+        return await gerarPDFDesktop(dataInicio, dataFim, tipo, res);
+    }
+
+    if (modoPdf === "node") {
+        return await gerarPDF(dadosRelatorio, res);
+    }
+
+    if (podeUsarPdfDesktop()) {
+        return await gerarPDFDesktop(dataInicio, dataFim, tipo, res);
+    }
+
+    return await gerarPDF(dadosRelatorio, res);
 }
 
 async function buscarDadosRelatorio(
